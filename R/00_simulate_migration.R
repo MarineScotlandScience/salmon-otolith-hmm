@@ -1,5 +1,31 @@
-# Code to generate SST values from known migration
-# trajectories
+# Simulate migration
+#
+# Code to generate simulated sst values based on simple migratory behaviour.
+# The simulations use true length data from a sampled fish in the dataset.
+# Two migratory behaviours are available, north and west.
+#
+# The migration is divided into three stages
+#   Phase 1: Initial outward migration, either north or west
+#   Phase 2: Oscilliatory movement perpendicular to outward migration
+#   Phase 3: Return migration along back along outward path.
+#
+# The simulation uses daily time steps, with the distance travelled determined
+# by the length of the fish. This is scaled by a random uniform value between
+# 0 and 1 to replicate uniform movement model assumption in HMM.
+#
+# An equitorial projection is used to transform between km and lat lon
+#
+# Requires:
+#   data/lsmask.oisst.v2.nc
+#   data/sst.day.mean.nc
+#   data/ototlith_sst.csv
+#
+# Produces:
+#   sim/sim_[DIRECTION]_[ID].rds
+#
+# DIRECTION: The direction of the simulation (north or west)
+# ID: The fish used for length data and sampling sampling frequency.
+#     Restricted to 2009M053
 #
 # Author: James Ounsley
 
@@ -19,13 +45,15 @@ set.seed(111)
 
 #### CONFIG ####
 
-# Specify fish to use for length data
-P_ID <- "2009M053"
-
 # Name for simulation
+# Select as appropriate
 SIM_TYPE <- "sim_west"
 SIM_TYPE <- "sim_north"
+
 DIRECTION <- ifelse(grepl("sim_north",SIM_TYPE),"N","W")
+
+# Ffish to use for length data
+P_ID <- "2009M053"
 
 P1 <- 120 # Length of phase 1 in days (outward migration)
 P2 <- 230 # Length of phase 2 in days (perpendicular movement)

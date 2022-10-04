@@ -1,4 +1,6 @@
-# Code to run the hmm comparing otolith derived sst values
+# HMM
+#
+# Code to run the hmm comparing otolith derived (or simulated) sst values
 # with observed sst values.
 #
 # Largely follows:
@@ -8,6 +10,16 @@
 # In J. L. Nielsen, H. Arrizabalaga, N. Fragoso, A. Hobday, M. Lutcavage, & J. Sibert (Eds.), 
 # Tagging and tracking of marine animals with electronic devices (pp. 277–293). 
 # Springer Netherlands. https://doi.org/10.1007/978-1-4020-9640-2_17
+#
+# Requires:
+#   data/hmm_data.rds
+#   data/lsmask.oisst.v2.nc
+#   data/sst.day.mean.nc
+#
+# Produces:
+#   output/results_ID[FISH ID].rds
+#
+# FISH ID: Is the true or simulated individual.
 #
 # Author: James Ounsley
 

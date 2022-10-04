@@ -8,3 +8,4 @@ summary/
 .Rhistory
 .Rproj.user
 otolith_hmm.Rproj
+*.html

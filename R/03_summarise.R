@@ -1,4 +1,16 @@
-
+# Summarise HMM
+#
+# Calculate summary statistics for the HMM fits. Where the data is from a
+# simulation use the true values to scrutinise the fit.
+# 
+# Requires:
+#   output/results_ID[FISH ID].rds
+#
+# Produces:
+#   summary/hmm_summary_ID[FISH ID].csv
+#   plt/mean_path_ID[FISH ID].png
+#   anim/contour_ID[FISH ID].gif
+#
 rm(list=ls())
 library(tidyverse)
 library(lubridate)

@@ -1,3 +1,17 @@
+# Wrangle data
+#
+# Combine actual otolith sst data with simulated values to create a single 
+# data object. Wrangle columns to meet requirements of HMM.
+#
+# Requires:
+#   data/otolith_sst.csv
+#   sim/sim_north_2009M053.rds    - from 00_simulate_migration.R
+#   sim/sim_west_2009M053.rds     - from 00_simulate_migration.R
+#
+# Produces:
+#   data/hmm_data.rds#
+#
+#
 library(tidyverse)
 
 source('R/utilities.R')
