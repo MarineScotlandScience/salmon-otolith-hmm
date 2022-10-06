@@ -15,14 +15,15 @@ rm(list=ls())
 library(tidyverse)
 library(lubridate)
 library(mapdata)
+library(gganimate)
 
 source('R/utilities.R')
 
 # Specify simulated data to evaluate against
-P_ID <- "2009M116" # MSW
-#P_ID <- "2009M053" # 1SW
-#P_ID = "sim_west_2009M053"
-#P_ID = "sim_north_2009M053"
+# P_ID <- "2009M116" # MSW
+# P_ID <- "2009M053" # 1SW
+# P_ID = "sim_west_2009M053"
+P_ID = "sim_north_2009M053"
 
 SIM <- grepl("sim",P_ID)
 
@@ -276,4 +277,5 @@ anim <- animate(plt,nframes = N,fps=2.5,
 if(!dir.exists('./anim/')) dir.create('./anim/')
 anim_save(paste0('./anim/contour_ID',P_ID,'.gif'),
           animation=anim,renderer = gifski_renderer())
+
 
