@@ -29,7 +29,7 @@ sim_data <- list(readRDS('./sim/sim_north_2009M053.rds'),
   bind_rows() %>% 
   # Wrangle for compatibility with with otolith data
   mutate(datetime = as.numeric(datetime),
-         date = dmy('01/01/1800')+datetime) %>% 
+         date = lubridate::dmy('01/01/1800')+datetime) %>% 
   ungroup()
 
 # For the simulations we want to thin the sampled sst values to match those
@@ -39,20 +39,30 @@ thin_times <- otolith_data %>%
   pull(sst) %>% 
   is.na()
 sim_data[rep(thin_times,2),]$sst <- NA
+sim_data$sea_age <- "1SW"
 
-# Add the simulations data to the real otolith data
-hmm_data <- otolith_data %>% 
-  bind_rows(sim_data)
-  
+
+# Filter simulation file based on presence of data only and bind otolith data
+hmm_data <- sim_data %>% 
+  bind_rows(otolith_data)
+
 hmm_data <- hmm_data %>% 
-  # Filter data to weekly values
-  mutate(datetime = floor(as.numeric(datetime) / DAYS_PER_TS)*DAYS_PER_TS) %>% 
+  # Group data over weeks
+  mutate(tmp_datetime = datetime,
+         datetime = floor(as.numeric(datetime) / DAYS_PER_TS)*DAYS_PER_TS) %>% 
   group_by(id,datetime) %>% 
-  # Summarise weekly values, take first
-  summarise(sst = first(sst,order_by = is.na(sst)),
-            lat=first(lat,order_by = is.na(lat)),
-            lon=first(lon,order_by = is.na(lon)),
-            length=first(length)) %>% 
+  # Create a sorting index for summarise
+  # If an sst value is not na in the week, it will be first by this index,
+  # otherwise the first value in the week will be first by the index.
+  mutate(is_na_sst = is.na(sst)) %>% 
+  # Summarise taking values as determined by sorting index
+  summarise(sst = first(sst,order_by = is_na_sst),
+            lat = first(lat,order_by = is_na_sst),
+            lon = first(lon,order_by = is_na_sst),
+            sst_datetime = first(tmp_datetime,order_by = is_na_sst),
+            sst_true = first(sst_true,order_by = is_na_sst),
+            # Do we want the length to be the same date as sst?
+            length = first(length)) %>% 
   # Adjust start and end locations to match SST resolution
   mutate(lat = snap_to_grid(lat),
          lon = snap_to_grid(lon)) %>% 
@@ -60,7 +70,11 @@ hmm_data <- hmm_data %>%
 
 saveRDS(hmm_data,'data/hmm_data.rds')
 
+# Add the unfiltered simulation data to the real otolith data to create a 
+# daily file
+daily_data <- sim_data %>% 
+  bind_rows(otolith_data)
 
-
+saveRDS(daily_data,'data/daily_data.rds')
 
 
