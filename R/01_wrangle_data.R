@@ -17,11 +17,7 @@ library(tidyverse)
 source('R/utilities.R')
 
 # Read in raw otolith sst values and lengths
-otolith_data <- read_csv('data/otolith_sst.csv') %>% 
-  # There are instances of multiple data points per day.
-  # Take the first
-  group_by(id,datetime) %>% 
-  summarise_all(first)
+otolith_data <- read_csv('data/otolith_sst.csv') 
 
 # Read in simulation files used in manuscript
 sim_data <- list(readRDS('./sim/sim_north_2009M053.rds'),
