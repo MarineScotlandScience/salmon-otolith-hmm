@@ -9,8 +9,8 @@
 #   sim/sim_west_2009M053.rds     - from 00_simulate_migration.R
 #
 # Produces:
-#   data/hmm_data.rds#
-#
+#   data/hmm_data.rds
+#   data/daily_data.rds
 #
 library(tidyverse)
 
@@ -57,8 +57,10 @@ hmm_data <- hmm_data %>%
             lon = first(lon,order_by = is_na_sst),
             sst_datetime = first(tmp_datetime,order_by = is_na_sst),
             sst_true = first(sst_true,order_by = is_na_sst),
-            # Do we want the length to be the same date as sst?
-            length = first(length)) %>% 
+            # Do we want the length to be the same date as sst
+            # Length and sst are already unlinked, so lets take
+            # regular values for the length (median is middle of the week)
+            length = median(length)) %>% 
   # Adjust start and end locations to match SST resolution
   mutate(lat = snap_to_grid(lat),
          lon = snap_to_grid(lon)) %>% 
