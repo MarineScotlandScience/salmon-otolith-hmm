@@ -17,7 +17,8 @@ library(tidyverse)
 source('R/utilities.R')
 
 # Read in raw otolith sst values and lengths
-otolith_data <- read_csv('data/otolith_sst.csv') 
+otolith_data <- read_csv('data/otolith_sst.csv')
+otolith_data$sea_age <- recode(otolith_data$sea_age, MSW = "2SW")
 
 # Read in simulation files used in manuscript
 sim_data <- list(readRDS('./sim/sim_north_2009M053.rds'),
@@ -57,10 +58,9 @@ hmm_data <- hmm_data %>%
             lon = first(lon,order_by = is_na_sst),
             sst_datetime = first(tmp_datetime,order_by = is_na_sst),
             sst_true = first(sst_true,order_by = is_na_sst),
-            # Do we want the length to be the same date as sst
-            # Length and sst are already unlinked, so lets take
-            # regular values for the length (median is middle of the week)
-            length = median(length)) %>% 
+            # take first length of the week
+            length = first(length),
+            sea_age = first(sea_age)) %>% 
   # Adjust start and end locations to match SST resolution
   mutate(lat = snap_to_grid(lat),
          lon = snap_to_grid(lon)) %>% 

@@ -30,3 +30,14 @@ SIM_LAT = seq(45.125, MAX_LAT + .125, by = SIM_RES)
 # Adjust lat / lot to a grid point in the model
 snap_to_grid = function(x){ return(x - x%%SIM_RES + SIM_RES/2) }
 
+# Functions to transform our coordinate system to lon and lat indices of sst 
+# data
+# For the high res sims - 0.25 degree resolution with .125 offset
+# Lon indices go from 0 - 360 so need modulo 360 to deal with negative coords,
+# - 0.125 to go to index value, plus 1 to get R indices (i.e 0 degrees = index 1)
+# times 4 to retrieve index
+lon_index = function(x){ ((x - .125) %% 360 ) * 4 + 1 }
+# Lat indices go from 0 - 180, with 0 at south pole so need 
+# to add 90 to get corresponding indices
+# - 0.125 to go to index value, *4 and add 1
+lat_index = function(x){ ((x - 0.125) + 90) * 4 + 1 }
