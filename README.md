@@ -4,8 +4,6 @@
 
 ### Otolith data
 
-TODO: link to data portal
-
 Assumed path to data:
 
     data/ototlith_sst.csv
@@ -45,7 +43,9 @@ Assumed paths to data:
     progress
     tidyverse
     lubridate
-
+    mapdata
+    gganimate
+    patchwork
 
 ## Usage
 
@@ -53,6 +53,7 @@ Run scripts in order.
 
 + Run `00_simulate_migration.R` with both the `north` and `west` configuration.
 + `01_wrangle_data.R` expects simulation files from these simulations to
-piece together with the real data. 
+piece together with the observed data. 
 + `02_hmm.R` Runs the HMM on the specified time series
-+ `03_summarise.R` Generate summary plots etc. on specified HMM output.
++ `03_summarise.R` Generate combined files from specified HMM outputs to support visualisation.
++ `o4_manuscript_plots.R` Generate plots associated with the manuscript

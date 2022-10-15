@@ -15,14 +15,10 @@
 rm(list=ls())
 library(tidyverse)
 library(lubridate)
-library(mapdata)
-library(gganimate)
-library(patchwork)
 
 source('R/utilities.R')
 
 # Load universal data ####
-w2hr <- map_data("world")
 
 # SST data
 # Define the conversion from SST / LSMASK to our coords
@@ -240,7 +236,8 @@ for(i in 1:length(P_ID)){
            sim = grepl("sim",P_ID[i]))
   master_history_tbl <- bind_rows(master_history_tbl) %>%
     mutate(sea_age = first(sim_data$sea_age),
-           sim = grepl("sim",P_ID[i]))
+           sim = grepl("sim",P_ID[i]),
+           P_ID = P_ID[i])
   
   # gather all data together ####
   big_track_tbl[[i]] <- master_track_tbl

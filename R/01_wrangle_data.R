@@ -54,8 +54,9 @@ hmm_data <- hmm_data %>%
   mutate(is_na_sst = is.na(sst)) %>% 
   # Summarise taking values as determined by sorting index
   summarise(sst = first(sst,order_by = is_na_sst),
-            lat = first(lat,order_by = is_na_sst),
-            lon = first(lon,order_by = is_na_sst),
+            # need slightly different behaviour for sims vs fish (only have start and end locations)
+            lat = ifelse(sum(grepl("sim", id)) >0, first(lat,order_by = is_na_sst), first(na.omit(lat))),
+            lon = ifelse(sum(grepl("sim", id)) >0, first(lon,order_by = is_na_sst), first(na.omit(lon))),
             sst_datetime = first(tmp_datetime,order_by = is_na_sst),
             sst_true = first(sst_true,order_by = is_na_sst),
             # take first length of the week

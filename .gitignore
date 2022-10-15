@@ -1,5 +1,5 @@
 R/_*
-data/
+
 output/
 sim/
 anim/
@@ -9,3 +9,4 @@ summary/
 .Rproj.user
 otolith_hmm.Rproj
 *.html
+README.md

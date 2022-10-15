@@ -41,8 +41,8 @@ sourceCpp('./cpp/conv.cpp')
 
 
 # Specify fish to use
-P_ID <- "2009M116" # MSW
-# P_ID <- "2009M053" # 1SW
+# P_ID <- "2009M116" # MSW
+P_ID <- "2009M053" # 1SW
 # P_ID <- "sim_north_2009M053" # Simulation north
 # P_ID <- "sim_west_2009M053" # Simulation west
 
