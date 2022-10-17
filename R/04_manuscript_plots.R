@@ -332,7 +332,7 @@ for (i in strip_t) {
   g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
   k <- k+1
 }
-(figS1 <- grid::grid.draw(g))
+grid::grid.draw(g)
 
 # Contour animation (Supplementary Figs) #######################################
 # define ID - run through each to generate output
@@ -393,32 +393,40 @@ anim_save(paste0('./anim/contour_ID',id,'.gif'),
 
 # Save ########################################################################
 if(!dir.exists('./plt/')) dir.create('./plt/')
+
 (fig1 <- fig1a/fig1b + plot_annotation(tag_levels = "A"))
-pdf("./plt/Figure1.pdf", width = 3.35, family = "Times")
+jpeg("./plt/Figure1.jpeg", width = 3.35, family = "Times", res = 300)
 print(fig1)
 dev.off()
+ggsave("./plt/Figure1.jpeg", fig1, width = 85, units = c("mm"), dpi = 300)
 
 (fig2 <- fig2a/fig2b + plot_annotation(tag_levels = "A"))
 pdf("./plt/Figure2.pdf", width = 7, family = "Times")
 print(fig2)
 dev.off()
+ggsave("./plt/Figure2.jpeg", fig2, width = 180, units = c("mm"), dpi = 300)
 
 (fig3 <- fig3a/fig3b/fig3c + plot_annotation(tag_levels = "A"))
 pdf("./plt/Figure3.pdf", width = 3.35, family = "Times")
 print(fig3)
 dev.off()
+ggsave("./plt/Figure3.jpeg", fig3, width = 85, units = c("mm"), dpi = 300)
 
 (fig4 <- fig4a/fig4b + plot_annotation(tag_levels = "A"))
 pdf("./plt/Figure4.pdf", width = 7, family = "Times")
 print(fig4)
 dev.off()
+ggsave("./plt/Figure4.jpeg", fig4, width = 180, units = c("mm"), dpi = 300)
 
 pdf("./plt/FigureS1.pdf", width = 7, family = "Times")
-print(figS1)
+grid::grid.draw(g)
 dev.off()
+figS1 <- grid::grid.draw(g)
+ggsave("./plt/FigureS1.jpeg", figS1, width = 180, units = c("mm"), dpi = 300)
 
-pdf("./plt/FigureS2.pdf", width = 7, family = "Times")
-print(figS2)
+pdf("./plt/FigureS4.pdf", width = 7, family = "Times")
+print(figS4)
 dev.off()
+ggsave("./plt/FigureS4.jpeg", figS4, width = 180, units = c("mm"), dpi = 300)
 
 
