@@ -55,6 +55,7 @@ big_track_tbl %>%
                       panel.grid.major = element_line(colour = "white"),
                       panel.grid.minor = element_line(colour = "white"),
                       aspect.ratio = 1/1) +
+
    scale_x_date(limits = c(min(data$date), max(data$date)),
                 date_labels = "%b") )
 
@@ -68,8 +69,8 @@ big_track_tbl %>%
                        panel.background = element_rect(fill = 'white'),
                        panel.grid.major = element_line(colour = "white"),
                        panel.grid.minor = element_line(colour = "white"),
-                       aspect.ratio = 1/1) ) +
-  scale_x_date(date_labels = "%b")
+                       aspect.ratio = 1/1)  +
+  scale_x_date(date_labels = "%b") )
 
 
 # Mean track plots #############################################################
@@ -105,7 +106,7 @@ plt_mean_fun <- function(track_data) {
                        panel.grid.minor = element_line(colour = "white"),
                        aspect.ratio = 1/1) +
     
-    xlab('Longitude') + ylab('Latitude') +
+    xlab('Longitude (°W)') + ylab('Latitude (°N)') +    
     facet_wrap(~lab)
   
   plt_mean
@@ -140,11 +141,9 @@ plt_sst_fun <- function(track_data) {
                        panel.background = element_rect(fill = 'white'),
                        panel.grid.major = element_line(colour = "white"),
                        panel.grid.minor = element_line(colour = "white"),
-                       aspect.ratio = 1/1,
-                       text = element_text(family = 'Times')) +
+                       aspect.ratio = 1/1) +
     
-    xlab('') + ylab('SST (C)') +
-    # facet_wrap(~lab)+
+    xlab("") + ylab(paste0('SST(°C)')) +
     scale_x_date(date_labels = "%b")+
     facet_wrap(~lab)
   
@@ -194,8 +193,9 @@ plt_distrib_fun <- function(contour_data, sst_data, track_data) {
             panel.grid.major = element_line(colour = "white"),
             panel.grid.minor = element_line(colour = "white"),
             plot.margin = margin(0,0,0,0,"pt")) +
-      xlab('Longitude') + ylab('Latitude') +
-      facet_wrap(~time, ncol = 4)
+      xlab('Longitude (°W)') + ylab('Latitude (°N)') +
+      facet_wrap(~time, ncol = 4) +
+      ggtitle(head(contour_data$lab,1))
     
     plt_distrib
   }else{
@@ -231,11 +231,12 @@ plt_distrib_fun <- function(contour_data, sst_data, track_data) {
             panel.grid.major = element_line(colour = "white"),
             panel.grid.minor = element_line(colour = "white"),
             plot.margin = margin(0,0,0,0,"pt")) +
-      xlab('Longitude') + ylab('Latitude') +
+      xlab('Longitude (°W)') + ylab('Latitude (°N)') +
       facet_wrap(~time, ncol = 4) +
       
       # Add true location from simulation
-      geom_point(data = track_data, aes(x = lon, y = lat), col = 'red', inherit.aes = FALSE) 
+      geom_point(data = track_data, aes(x = lon, y = lat), col = 'red', inherit.aes = FALSE) +
+      ggtitle(head(contour_data$lab,1))
     
     plt_distrib
   }
@@ -277,6 +278,7 @@ twosw <- twosw[seq(match(6,twosw$month),match(6,twosw$month)+24,3),]$data_week
                 filter(big_sst_tbl, lab == "Westward" & data_week %in% onesw),
                 filter(big_track_tbl, lab == "Westward" & data_week %in% onesw)) )
 
+# Supplementary plot showing data / no data steps 
 # redefine time slices for full plot in supplementary
 tmp <- big_contour_tbl %>%
   filter(P_ID == "2009M053" & !duplicated(data_week)) %>%
@@ -318,7 +320,7 @@ p <- big_contour_tbl %>%
         panel.grid.minor = element_line(colour = "white"),
         plot.margin = margin(0,0,0,0,"pt")) +
   
-  xlab('Longitude') + ylab('Latitude') 
+  xlab('Longitude (°W)') + ylab('Latitude (°N)') 
 
 # colour facet labels by data / no data
 g <- ggplot_gtable(ggplot_build(p))
@@ -334,12 +336,94 @@ for (i in strip_t) {
 }
 grid::grid.draw(g)
 
+# supplementary figure: other tracking data illustration
+tmp <- big_contour_tbl %>%
+  filter(P_ID == "2009M116" & !duplicated(data_week)) %>%
+  group_by(time) %>%
+  arrange(date) %>%
+  filter(no_data == FALSE) %>%
+  filter(row_number() == 1) 
+
+tmp <- tmp[-c(1:2),]
+tmp <- tmp[seq(1,nrow(tmp),2),]
+
+twosw <- tmp$data_week
+
+(figS8 <- big_contour_tbl %>%
+  filter(P_ID == "2009M116" & data_week %in% twosw & tot_lik <= 0.9) %>%
+  mutate(time = forcats::fct_reorder(time,date)) %>%
+  ggplot(aes(x = lon, y = lat, fill = tot_lik)) +
+  
+  # Plot distribution
+  geom_tile() +
+  
+  # Add the map
+  geom_polygon(data=w2hr,
+               aes(x = long, y = lat, group = group),
+               fill='grey60',
+               inherit.aes = FALSE) +
+  
+  coord_quickmap(xlim = c(-75,25),
+                 ylim = c(45,80)) +
+  
+  # Add facets
+  facet_wrap(~time,nrow=3) +
+  
+  # Add the theme
+  viridis::scale_fill_viridis(direction = -1) +
+  theme_bw() +
+  theme(legend.position = 'none',
+        axis.ticks.length = unit(0, "pt"),
+        panel.spacing = unit(0,"pt"),
+        panel.background = element_rect(fill = 'white'),
+        panel.grid.major = element_line(colour = "white"),
+        panel.grid.minor = element_line(colour = "white"),
+        plot.margin = margin(0,0,0,0,"pt")) +
+  
+  xlab('Longitude (°W)') + ylab('Latitude (°N)') )
+
+# supplementary figure: capture / emigration locations 
+df <- data.frame(lab = rep(c("1SW","2SW"),2), lat_catch = c(57.86,57.86,58.56,58.56),lon_catch = c(-3.98,-3.98,-3.92,-3.92),
+catch=c("emigration","emigration","capture","capture"))
+
+# add to track data
+track_data <- left_join(filter(big_track_tbl, sim == FALSE),df, by = "lab")
+
+(  figS5 <- track_data %>%
+    ggplot(aes(x=lon_mean,y=lat_mean,col=date), size = 2) +
+    
+    # Plot mean positions
+    geom_point(size = 2) +
+    
+    # Add the map
+    geom_polygon(data=w2hr,
+                 aes(x = long, y = lat, group = group),
+                 fill='grey',
+                 inherit.aes = FALSE) +
+    coord_quickmap(xlim = c(-15,7),
+                   ylim = c(57,75)) +
+    
+    # Add emigration / capture location
+    geom_point(data = df, aes(x = lon_catch, y = lat_catch, shape = catch), size = 3, inherit.aes = FALSE) + 
+    
+    # Add the theme
+    scale_color_gradient(low = 'gold', high = 'darkorange3') +
+    theme_bw() + theme(legend.position = 'none',
+                       plot.margin = unit(c(0,0.1,0,0.1),"lines"),
+                       panel.background = element_rect(fill = 'white'),
+                       panel.grid.major = element_line(colour = "white"),
+                       panel.grid.minor = element_line(colour = "white"),
+                       aspect.ratio = 1/1) +
+    
+    xlab('Longitude (°W)') + ylab('Latitude (°N)') +    
+    facet_wrap(~lab))
+
 # Contour animation (Supplementary Figs) #######################################
 # define ID - run through each to generate output
-# id = "2009M053"
+id = "2009M053"
 # id = "2009M116"
 # id = "sim_west_2009M053"
-id = "sim_north_2009M053"
+# id = "sim_north_2009M053"
 
 SIM = grepl("sim", id)
 master_contour_tbl <- filter(big_contour_tbl, P_ID == id)
@@ -371,7 +455,7 @@ plt <- master_contour_tbl %>%
   # Add the theme
   theme_bw() + theme(legend.position = 'none',
                      plot.margin = unit(c(0,0.1,0,0.1),"lines")) +
-  xlab('Longitude') + ylab('Latitude') + 
+  xlab('Longitude (°W)') + ylab('Latitude (°N)') + 
   labs(title = paste("{current_frame}", first(sim_data$lab), sep = "  "))
 
 if(SIM){
@@ -395,38 +479,39 @@ anim_save(paste0('./anim/contour_ID',id,'.gif'),
 if(!dir.exists('./plt/')) dir.create('./plt/')
 
 (fig1 <- fig1a/fig1b + plot_annotation(tag_levels = "A"))
-jpeg("./plt/Figure1.jpeg", width = 3.35, family = "Times", res = 300)
-print(fig1)
-dev.off()
+(fig1 <- ggpubr::ggarrange(fig1a,fig1b,nrow=2,labels = c("A","B")))
+
 ggsave("./plt/Figure1.jpeg", fig1, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure1a.jpeg", fig1a, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure1b.jpeg", fig1b, width = 85, units = c("mm"), dpi = 300)
 
 (fig2 <- fig2a/fig2b + plot_annotation(tag_levels = "A"))
-pdf("./plt/Figure2.pdf", width = 7, family = "Times")
-print(fig2)
-dev.off()
+(fig2 <- ggpubr::ggarrange(fig2a,fig2b,nrow=2,labels = c("A","B")))
+
 ggsave("./plt/Figure2.jpeg", fig2, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure2a.jpeg", fig2a, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure2b.jpeg", fig2b, width = 180, units = c("mm"), dpi = 300)
 
 (fig3 <- fig3a/fig3b/fig3c + plot_annotation(tag_levels = "A"))
-pdf("./plt/Figure3.pdf", width = 3.35, family = "Times")
-print(fig3)
-dev.off()
+(fig3 <- fig3a/fig3b/fig3c + plot_annotation(tag_levels = "A"))
+(fig3 <- ggpubr::ggarrange(fig3a,fig3b,fig3c,nrow=3,labels = c("A","B","C")))
+
 ggsave("./plt/Figure3.jpeg", fig3, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure3a.jpeg", fig3a, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure3b.jpeg", fig3b, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure3c.jpeg", fig3c, width = 85, units = c("mm"), dpi = 300)
 
 (fig4 <- fig4a/fig4b + plot_annotation(tag_levels = "A"))
-pdf("./plt/Figure4.pdf", width = 7, family = "Times")
-print(fig4)
-dev.off()
-ggsave("./plt/Figure4.jpeg", fig4, width = 180, units = c("mm"), dpi = 300)
+(fig4 <- ggpubr::ggarrange(fig4a,fig4b,nrow=2,labels = c("A","B")))
 
-pdf("./plt/FigureS1.pdf", width = 7, family = "Times")
-grid::grid.draw(g)
-dev.off()
-figS1 <- grid::grid.draw(g)
+ggsave("./plt/Figure4.jpeg", fig4, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure4a.jpeg", fig4a, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure4b.jpeg", fig4b, width = 180, units = c("mm"), dpi = 300)
+
+(figS1 <- grid::grid.draw(g))
 ggsave("./plt/FigureS1.jpeg", figS1, width = 180, units = c("mm"), dpi = 300)
 
-pdf("./plt/FigureS4.pdf", width = 7, family = "Times")
-print(figS4)
-dev.off()
+
 ggsave("./plt/FigureS4.jpeg", figS4, width = 180, units = c("mm"), dpi = 300)
-
-
+ggsave("./plt/FigureS5.jpeg", figS5, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/FigureS8.jpeg", figS8, width = 180, units = c("mm"), dpi = 300)
