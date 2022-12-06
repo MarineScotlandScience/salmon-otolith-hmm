@@ -188,6 +188,7 @@ plt_distrib_fun <- function(contour_data, sst_data, track_data) {
       theme_bw() +
       theme(legend.position = 'none',
             axis.ticks.length = unit(0, "pt"),
+            axis.text = element_text(size=8),
             panel.spacing = unit(0,"pt"),
             panel.background = element_rect(fill = 'white'),
             panel.grid.major = element_line(colour = "white"),
@@ -226,6 +227,7 @@ plt_distrib_fun <- function(contour_data, sst_data, track_data) {
       theme_bw() +
       theme(legend.position = 'none',
             axis.ticks.length = unit(0, "pt"),
+            axis.text = element_text(size=8),
             panel.spacing = unit(0,"pt"),
             panel.background = element_rect(fill = 'white'),
             panel.grid.major = element_line(colour = "white"),
@@ -481,14 +483,14 @@ if(!dir.exists('./plt/')) dir.create('./plt/')
 (fig1 <- fig1a/fig1b + plot_annotation(tag_levels = "A"))
 (fig1 <- ggpubr::ggarrange(fig1a,fig1b,nrow=2,labels = c("A","B")))
 
-ggsave("./plt/Figure1.jpeg", fig1, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure1.jpeg", fig1, width = 85, height=100, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure1a.jpeg", fig1a, width = 85, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure1b.jpeg", fig1b, width = 85, units = c("mm"), dpi = 300)
 
 (fig2 <- fig2a/fig2b + plot_annotation(tag_levels = "A"))
 (fig2 <- ggpubr::ggarrange(fig2a,fig2b,nrow=2,labels = c("A","B")))
 
-ggsave("./plt/Figure2.jpeg", fig2, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure2.jpeg", fig2, width = 180, height = 100, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure2a.jpeg", fig2a, width = 180, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure2b.jpeg", fig2b, width = 180, units = c("mm"), dpi = 300)
 
@@ -496,15 +498,15 @@ ggsave("./plt/Figure2b.jpeg", fig2b, width = 180, units = c("mm"), dpi = 300)
 (fig3 <- fig3a/fig3b/fig3c + plot_annotation(tag_levels = "A"))
 (fig3 <- ggpubr::ggarrange(fig3a,fig3b,fig3c,nrow=3,labels = c("A","B","C")))
 
-ggsave("./plt/Figure3.jpeg", fig3, width = 85, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure3.jpeg", fig3, width = 85, height = 140, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure3a.jpeg", fig3a, width = 85, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure3b.jpeg", fig3b, width = 85, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure3c.jpeg", fig3c, width = 85, units = c("mm"), dpi = 300)
 
 (fig4 <- fig4a/fig4b + plot_annotation(tag_levels = "A"))
-(fig4 <- ggpubr::ggarrange(fig4a,fig4b,nrow=2,labels = c("A","B")))
+(fig4 <- ggpubr::ggarrange(fig4a,fig4b,nrow=2,heights = c(1,1.8), labels = c("A","B")))
 
-ggsave("./plt/Figure4.jpeg", fig4, width = 180, units = c("mm"), dpi = 300)
+ggsave("./plt/Figure4.jpeg", fig4, width = 180, height= 150, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure4a.jpeg", fig4a, width = 180, units = c("mm"), dpi = 300)
 ggsave("./plt/Figure4b.jpeg", fig4b, width = 180, units = c("mm"), dpi = 300)
 
